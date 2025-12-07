@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BKK Trip V4</title>
+    <title>🇹🇭 曼谷聖誕跨年之旅</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     
@@ -12,9 +12,9 @@
             /* 曼谷文青配色 V4 */
             --bg-color: #FAFAF5; 
             --card-bg: #FFFFFF;
-            --primary: #C75146; /* 磚紅 */
-            --secondary: #2D5D7B; /* 深藍 */
-            --accent: #E0A458; /* 芥末黃 */
+            --primary: #C75146; /* 磚紅 (景點) */
+            --secondary: #2D5D7B; /* 深藍 (主色) */
+            --accent: #E0A458; /* 芥末黃 (美食) */
             --text-main: #333333;
             --radius: 16px;
         }
@@ -30,14 +30,14 @@
 
         /* Header */
         .header { padding: 20px 20px 10px; background: var(--bg-color); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { margin: 0; font-size: 1.4rem; color: var(--secondary); }
-        .edit-btn { background: none; border: 1px solid var(--secondary); color: var(--secondary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; transition: 0.2s; }
+        .header h1 { margin: 0; font-size: 1.3rem; color: var(--secondary); font-weight: 700; }
+        .edit-btn { background: none; border: 1px solid var(--secondary); color: var(--secondary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; transition: 0.2s; cursor: pointer; }
         .edit-btn.editing { background: var(--secondary); color: white; }
 
         /* Date Nav */
         .date-nav { display: flex; overflow-x: auto; padding: 10px 20px; gap: 10px; scrollbar-width: none; }
         .date-nav::-webkit-scrollbar { display: none; }
-        .date-chip { background: white; padding: 8px 16px; border-radius: 20px; white-space: nowrap; color: #999; border: 1px solid transparent; transition: 0.3s; font-size: 0.9rem; }
+        .date-chip { background: white; padding: 8px 16px; border-radius: 20px; white-space: nowrap; color: #999; border: 1px solid transparent; transition: 0.3s; font-size: 0.9rem; cursor: pointer; }
         .date-chip.active { background: var(--secondary); color: white; transform: scale(1.05); box-shadow: 0 4px 8px rgba(45,93,123,0.2); }
 
         /* Trip Card */
@@ -48,14 +48,15 @@
             border-left: 5px solid #ddd; position: relative;
         }
         
-        .type-spot { border-left-color: var(--primary); }
-        .type-food { border-left-color: var(--accent); }
-        .type-shop { border-left-color: #8D6E63; }
-        .type-massage { border-left-color: #81C784; }
+        .type-spot { border-left-color: var(--primary); }    /* 景點-紅 */
+        .type-food { border-left-color: var(--accent); }     /* 美食-黃 */
+        .type-shop { border-left-color: #8D6E63; }           /* 購物-棕 */
+        .type-massage { border-left-color: #81C784; }        /* 放鬆-綠 */
+        .type-transport { border-left-color: #5C6BC0; }      /* 交通-藍 */
 
         .card-header { display: flex; align-items: flex-start; width: 100%; }
         .drag-handle { color: #ddd; margin-right: 10px; cursor: grab; font-size: 1.2rem; display: none; padding-top: 2px;}
-        .card-main { flex: 1; min-width: 0; /* 防止文字溢出 */ }
+        .card-main { flex: 1; min-width: 0; }
         .card-time { font-size: 0.85rem; color: var(--primary); font-weight: bold; margin-bottom: 2px; }
         .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
         .card-note { font-size: 0.9rem; color: #666; background: #f4f4f4; padding: 8px; border-radius: 8px; margin-top: 8px; white-space: pre-wrap; }
@@ -66,15 +67,15 @@
             text-decoration: none; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; 
             display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; font-weight: 500;
         }
-        .link-map { background: #e3f2fd; color: #1565c0; } /* 藍色地圖 */
-        .link-web { background: #f3e5f5; color: #7b1fa2; } /* 紫色網頁 */
+        .link-map { background: #e3f2fd; color: #1565c0; } 
+        .link-web { background: #f3e5f5; color: #7b1fa2; }
 
-        .btn-del { position: absolute; right: 10px; top: 10px; color: #ff5252; background: none; border: none; display: none; font-size: 1.2rem; padding: 5px; }
+        .btn-del { position: absolute; right: 10px; top: 10px; color: #ff5252; background: none; border: none; display: none; font-size: 1.2rem; padding: 5px; cursor: pointer; }
 
         /* FAB & Nav */
         .fab { position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--secondary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(45,93,123,0.4); border: none; z-index: 90; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); z-index: 100; }
-        .nav-item { flex: 1; padding: 12px; background: none; border: none; color: #bbb; text-align: center; font-size: 0.8rem; }
+        .nav-item { flex: 1; padding: 12px; background: none; border: none; color: #bbb; text-align: center; font-size: 0.8rem; cursor: pointer; }
         .nav-item.active { color: var(--secondary); font-weight: bold; }
         .nav-item span { display: block; font-size: 1.4rem; margin-bottom: 2px; }
 
@@ -87,8 +88,8 @@
         .form-group label { display: block; font-size: 0.9rem; color: #666; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: 'Prompt'; }
         textarea.form-control { resize: none; height: 80px; }
-        .btn-save { width: 100%; padding: 14px; background: var(--secondary); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; }
-        .btn-cancel { width: 100%; padding: 12px; background: white; color: #999; border: none; margin-top: 5px; }
+        .btn-save { width: 100%; padding: 14px; background: var(--secondary); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; cursor: pointer; }
+        .btn-cancel { width: 100%; padding: 12px; background: white; color: #999; border: none; margin-top: 5px; cursor: pointer; }
 
         /* Wallet */
         #wallet-view { display: none; padding: 20px; }
@@ -102,7 +103,7 @@
         <div class="header">
             <div>
                 <h1 style="font-size:1.2rem">🇹🇭 BKK Trip</h1>
-                <span style="font-size:0.8rem; color:#888">Interactive Guide</span>
+                <span style="font-size:0.8rem; color:#888">12/23 - 12/28</span>
             </div>
             <button class="edit-btn" onclick="toggleEdit()">✎ 排序/刪除</button>
         </div>
@@ -140,32 +141,28 @@
                 <label>活動名稱</label>
                 <input type="text" id="new-title" class="form-control" placeholder="例：IconSiam">
             </div>
-            
-            <hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
-
             <div class="form-group">
-                <label>Google Map 連結 (留空則自動搜尋)</label>
-                <input type="text" id="new-map-link" class="form-control" placeholder="地圖網址...">
-            </div>
-            
-            <div class="form-group">
-                <label>部落格/攻略網頁 (選填)</label>
-                <input type="text" id="new-web-link" class="form-control" placeholder="https://部落格文章網址...">
-            </div>
-
-            <div class="form-group">
-                <label>文字備註 (訂位號、菜單)</label>
-                <textarea id="new-note" class="form-control" placeholder="輸入文字備註..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>類型標籤</label>
+                <label>類型</label>
                 <select id="new-type" class="form-control">
                     <option value="spot">📍 景點 (紅色)</option>
                     <option value="food">🍜 美食 (黃色)</option>
                     <option value="shop">🛍️ 購物 (棕色)</option>
                     <option value="massage">💆 放鬆 (綠色)</option>
+                    <option value="transport">🚕 交通 (藍色)</option>
                 </select>
+            </div>
+            <hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
+            <div class="form-group">
+                <label>Google Map 連結 (留空自動搜尋)</label>
+                <input type="text" id="new-map-link" class="form-control" placeholder="地圖網址...">
+            </div>
+            <div class="form-group">
+                <label>部落格/攻略網頁 (選填)</label>
+                <input type="text" id="new-web-link" class="form-control" placeholder="http://...">
+            </div>
+            <div class="form-group">
+                <label>備註</label>
+                <textarea id="new-note" class="form-control" placeholder="輸入備註..."></textarea>
             </div>
             <button class="btn-save" onclick="saveItem()">確認新增</button>
             <button class="btn-cancel" onclick="closeModal('add-modal')">取消</button>
@@ -183,39 +180,67 @@
     </div>
 
     <script>
-        // === 1. 資料處理 ===
+        // === 1. 資料處理 (已整合你的真實行程) ===
         const defaultData = {
             days: ["12/23 (二)", "12/24 (三)", "12/25 (四)", "12/26 (五)", "12/27 (六)", "12/28 (日)"],
             itinerary: {
-                0: [
-                    {
-                        id:1, time:"23:00", title:"唐人街宵夜", type:"food", 
-                        mapLink:"", webLink:"https://google.com", 
-                        note:"必點：綠色制服那家的沙爹，人多要排隊"
-                    }
+                0: [ // Day 1
+                    {id:101, time:"18:00", title:"飛往曼谷 (FD235)", type:"transport", note:"高雄-廊曼，預計 21:30 抵達"},
+                    {id:102, time:"22:00", title:"機場接機", type:"transport", note:"包車前往飯店，約半小時"},
+                    {id:103, time:"22:30", title:"入住 B2 唐人街飯店", type:"spot", mapLink:"", note:"B2 China Town Yaowarat Premier Hotel"},
+                    {id:104, time:"23:00", title:"唐人街宵夜", type:"food", note:"尋找街頭美食！"}
+                ],
+                1: [ // Day 2
+                    {id:201, time:"09:00", title:"石龍軍路漫遊", type:"spot", note:"老城區美食與文青小店"},
+                    {id:202, time:"11:00", title:"臥佛寺 Wat Pho", type:"spot"},
+                    {id:203, time:"13:00", title:"鄭王廟 Wat Arun", type:"spot", note:"搭船到對岸"},
+                    {id:204, time:"15:00", title:"王朗市場 Wang Lang", type:"shop", note:"在地人市場體驗"},
+                    {id:205, time:"18:00", title:"River City 郵輪晚餐", type:"food", note:"昭披耶河畔"}
+                ],
+                2: [ // Day 3
+                    {id:301, time:"09:00", title:"特色早餐: 益生甫記/安樂園", type:"food"},
+                    {id:302, time:"10:30", title:"嵩越路散策", type:"spot", note:"歷史感街道拍照"},
+                    {id:303, time:"14:00", title:"換飯店: 曼谷茉莉花59號", type:"spot", note:"Jasmine 59 Hotel (通羅BTS)"},
+                    {id:304, time:"16:00", title:"石龍軍路 (32Bar)", type:"spot"},
+                    {id:305, time:"19:00", title:"考山路 / Iconsiam", type:"shop", note:"視情況選擇夜生活或百貨"}
+                ],
+                3: [ // Day 4
+                    {id:401, time:"08:00", title:"包車一日遊 (集合)", type:"transport", note:"飯店大廳集合"},
+                    {id:402, time:"10:00", title:"美功鐵道市場", type:"spot", note:"看火車經過奇景"},
+                    {id:403, time:"12:00", title:"丹嫩莎水上市場", type:"spot", note:"體驗手搖船"},
+                    {id:404, time:"14:00", title:"樹中廟", type:"spot"},
+                    {id:405, time:"15:30", title:"返回曼谷", type:"transport", note:"按摩或逛街"}
+                ],
+                4: [ // Day 5 (自由發揮預留)
+                    {id:501, time:"10:00", title:"洽圖洽週末市集 (如遇週末)", type:"shop"},
+                    {id:502, time:"18:00", title:"Jodd Fairs 夜市", type:"food"}
+                ],
+                5: [ // Day 6
+                    {id:601, time:"10:00", title:"最後採購 / 按摩", type:"massage"},
+                    {id:602, time:"13:00", title:"前往機場", type:"transport"}
                 ]
             },
             expenses: []
         };
 
-        // 注意：這裡 Key 改為 v4，避免與舊資料衝突
-        let data = JSON.parse(localStorage.getItem('bkk_trip_v4')) || defaultData;
+        // 避免覆蓋掉你剛剛如果在手機上已經記的帳，這裡做一個檢查
+        // 如果是第一次用 (沒有資料)，就載入上面的 defaultData
+        // 如果已經有資料 (user_data_v5)，就用 localStorage 的
+        let data = JSON.parse(localStorage.getItem('user_data_v5')) || defaultData;
         let currentDay = 0;
         let isEditing = false;
 
         function saveData() {
-            localStorage.setItem('bkk_trip_v4', JSON.stringify(data));
+            localStorage.setItem('user_data_v5', JSON.stringify(data));
         }
 
         // === 2. 介面渲染 ===
         function render() {
-            // 日期導航
             const nav = document.getElementById('date-nav');
             nav.innerHTML = data.days.map((d, i) => 
                 `<button class="date-chip ${i === currentDay ? 'active' : ''}" onclick="setDay(${i})">${d}</button>`
             ).join('');
 
-            // 行程列表
             const container = document.getElementById('days-container');
             container.innerHTML = '';
             
@@ -225,23 +250,12 @@
                 
                 const list = document.createElement('div');
                 list.className = 'trip-list';
-                list.id = `list-${idx}`;
-
+                
                 const items = data.itinerary[idx] || [];
                 items.forEach((item, itemIdx) => {
-                    // 生成地圖按鈕
-                    let mapBtn = '';
-                    if (item.mapLink) {
-                        mapBtn = `<a href="${item.mapLink}" target="_blank" class="btn-link link-map">📍 導航</a>`;
-                    } else {
-                        mapBtn = `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}" target="_blank" class="btn-link link-map">🔍 搜尋地圖</a>`;
-                    }
-
-                    // 生成網頁/部落格按鈕 (如果有填)
-                    let webBtn = '';
-                    if (item.webLink) {
-                        webBtn = `<a href="${item.webLink}" target="_blank" class="btn-link link-web">🔗 攻略/網頁</a>`;
-                    }
+                    let mapBtn = item.mapLink ? `<a href="${item.mapLink}" target="_blank" class="btn-link link-map">📍 導航</a>` : 
+                                 `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}" target="_blank" class="btn-link link-map">🔍 找地圖</a>`;
+                    let webBtn = item.webLink ? `<a href="${item.webLink}" target="_blank" class="btn-link link-web">🔗 攻略</a>` : '';
 
                     list.innerHTML += `
                         <div class="trip-card type-${item.type}" data-id="${item.id}">
@@ -251,11 +265,7 @@
                                     ${item.time ? `<div class="card-time">${item.time}</div>` : ''}
                                     <div class="card-title">${item.title}</div>
                                     ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
-                                    
-                                    <div class="card-actions">
-                                        ${mapBtn}
-                                        ${webBtn}
-                                    </div>
+                                    <div class="card-actions">${mapBtn}${webBtn}</div>
                                 </div>
                                 <button class="btn-del" style="display:${isEditing?'block':'none'}" onclick="delItem(${idx}, ${itemIdx})">✖</button>
                             </div>
@@ -264,7 +274,6 @@
                 dayDiv.appendChild(list);
                 container.appendChild(dayDiv);
 
-                // 綁定拖曳
                 new Sortable(list, {
                     handle: '.drag-handle',
                     animation: 150,
@@ -280,7 +289,6 @@
                     }
                 });
             });
-
             renderWallet();
         }
 
@@ -298,52 +306,40 @@
 
         // === 3. 操作邏輯 ===
         function setDay(i) { currentDay = i; render(); }
-        
         function toggleEdit() {
             isEditing = !isEditing;
             document.querySelector('.edit-btn').classList.toggle('editing');
             render();
         }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
+        
         function saveItem() {
             const time = document.getElementById('new-time').value;
             const title = document.getElementById('new-title').value;
             const mapLink = document.getElementById('new-map-link').value;
-            const webLink = document.getElementById('new-web-link').value; // 新增欄位
+            const webLink = document.getElementById('new-web-link').value;
             const note = document.getElementById('new-note').value;
             const type = document.getElementById('new-type').value;
 
             if(!title) return alert('請輸入標題');
-
             if(!data.itinerary[currentDay]) data.itinerary[currentDay] = [];
             
-            // 儲存資料
-            data.itinerary[currentDay].push({ 
-                id: Date.now(), 
-                time, title, mapLink, webLink, note, type 
-            });
-            
-            // 排序
+            data.itinerary[currentDay].push({ id: Date.now(), time, title, mapLink, webLink, note, type });
             data.itinerary[currentDay].sort((a,b) => (a.time||'99:99').localeCompare(b.time||'99:99'));
-            
             saveData();
             closeModal('add-modal');
             
-            // 清空欄位
-            document.getElementById('new-time').value = '';
-            document.getElementById('new-title').value = ''; 
-            document.getElementById('new-map-link').value = '';
-            document.getElementById('new-web-link').value = '';
-            document.getElementById('new-note').value = '';
-            
+            document.getElementById('new-time').value='';
+            document.getElementById('new-title').value=''; 
+            document.getElementById('new-map-link').value='';
+            document.getElementById('new-web-link').value='';
+            document.getElementById('new-note').value='';
             render();
         }
 
         function delItem(dayIdx, itemIdx) {
-            if(confirm('確定刪除此行程？')) {
+            if(confirm('刪除此行程？')) {
                 data.itinerary[dayIdx].splice(itemIdx, 1);
                 saveData();
                 render();
@@ -368,9 +364,7 @@
             btn.classList.add('active');
         }
 
-        // 啟動
         render();
-
     </script>
 </body>
-</html> 
+</html>
