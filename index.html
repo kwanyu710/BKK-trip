@@ -2,722 +2,715 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>曼谷自由行 & 記帳小幫手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>曼谷 BKK Trip 12/23-12/28</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #FF6B6B;
-            --secondary: #4ECDC4;
-            --dark: #2C3E50;
+            --primary: #FF6B6B;      /* 主色：熱情紅 */
+            --secondary: #4ECDC4;    /* 次色：清爽綠 */
+            --accent: #FFE66D;       /* 點綴：黃色 */
+            --dark: #2D3436;
             --light: #F7F9FC;
-            --white: #ffffff;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light);
-            color: var(--dark);
-            padding-bottom: 80px; /* 預留底部導航空間 */
-        }
-        
-        /* 導航列 */
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        .nav-item {
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            cursor: pointer;
-            flex: 1;
-        }
-        .nav-item.active {
-            color: var(--primary);
-            font-weight: bold;
-        }
-        .nav-icon {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 4px;
+            --card-bg: #FFFFFF;
+            --nav-height: 70px;
         }
 
-        /* 容器與標題 */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            display: none; /* 預設隱藏，透過 JS 切換 */
-        }
-        .container.active {
-            display: block;
-        }
-        h1, h2 {
-            text-align: center;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--light);
             color: var(--dark);
+            margin: 0;
+            padding-bottom: 100px; /* 避開底部導航 */
         }
-        
-        /* 卡片樣式 */
-        .card {
-            background: var(--white);
-            border-radius: 12px;
+
+        /* --- 頂部導航 (日期切換) --- */
+        .date-scroller {
+            background: var(--card-bg);
+            padding: 15px 10px;
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .date-chip {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #eee;
+            color: #888;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .date-chip.active {
+            background: var(--dark);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* --- 主容器 --- */
+        .container {
             padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+        .container.active { display: block; }
+
+        /* --- 卡片設計 --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             position: relative;
+            border-left: 5px solid #ccc;
         }
         
-        /* --- 行程樣式 --- */
-        .trip-header {
+        /* 卡片分類顏色 */
+        .type-flight { border-left-color: #0984e3; }
+        .type-hotel { border-left-color: #6c5ce7; }
+        .type-food { border-left-color: #e17055; }
+        .type-attraction { border-left-color: #00b894; }
+        .type-transport { border-left-color: #fdcb6e; }
+
+        .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
+            align-items: flex-start;
+            margin-bottom: 8px;
         }
-        .trip-time {
-            font-weight: bold;
+        .time-badge {
+            font-weight: 700;
             color: var(--primary);
             font-size: 1.1em;
         }
-        .trip-title {
-            font-size: 1.2em;
+        .weather-badge {
+            font-size: 0.8em;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f1f2f6;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .card-title {
+            font-size: 1.15em;
+            font-weight: bold;
             margin: 5px 0;
         }
-        .trip-links a {
-            color: var(--secondary);
+        .card-desc {
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.5;
+            white-space: pre-wrap; /* 保留換行 */
+        }
+        
+        /* AI 重點標記樣式 */
+        .highlight-tag {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .highlight-code {
+            background: #d4edda;
+            color: #155724;
+            font-family: monospace;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .card-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .btn-action {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
             text-decoration: none;
             font-size: 0.9em;
-            margin-right: 10px;
-        }
-        .trip-note {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-            background: #f0f0f0;
-            padding: 5px;
-            border-radius: 4px;
-        }
-        .action-btns {
-            text-align: right;
-            margin-top: 10px;
-        }
-        .btn-icon {
-            background: none;
-            border: none;
             cursor: pointer;
-            font-size: 1.2em;
-            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
+        .btn-nav { background: #dfe6e9; color: #2d3436; }
+        .btn-link { background: #e0f7fa; color: #006064; }
+        .btn-edit { background: white; border: 1px solid #ddd; color: #888; width: 40px; flex: none;}
+
+        /* --- 資訊頁樣式 --- */
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .info-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+        }
+        .info-label { color: #888; font-size: 0.9em; }
+        .info-value { font-weight: 500; text-align: right; }
 
         /* --- 記帳樣式 --- */
         .balance-card {
-            background: linear-gradient(135deg, var(--primary), #FF8E53);
+            background: linear-gradient(135deg, #2d3436, #000);
             color: white;
+            padding: 20px;
+            border-radius: 16px;
             text-align: center;
-        }
-        .total-amount {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
+            margin-bottom: 20px;
         }
         .expense-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .expense-info h4 {
-            margin: 0 0 5px 0;
-        }
-        .expense-meta {
-            font-size: 0.8em;
-            color: #888;
-        }
-        .expense-cost {
-            text-align: right;
-            font-weight: bold;
-        }
-        .expense-cost .twd {
-            color: var(--primary);
-            display: block;
-        }
-        .expense-cost .original {
-            font-size: 0.8em;
-            color: #999;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
         }
 
-        /* --- 設定樣式 --- */
-        .member-tag {
-            display: inline-block;
-            background: var(--secondary);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 0.9em;
-        }
-
-        /* 浮動按鈕 (FAB) */
-        .fab {
+        /* --- 底部導航 --- */
+        .bottom-nav {
             position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 50%;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: white;
             display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #b2bec3;
+            font-size: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-btn.active { color: var(--primary); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+
+        /* --- Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 16px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .form-control {
+            width: 100%; padding: 10px; margin-bottom: 10px;
+            border: 1px solid #ddd; border-radius: 8px;
+        }
+        .btn-full { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-cancel { background: #eee; color: #666; }
+
+        /* FAB */
+        .fab {
+            position: fixed; bottom: 85px; right: 20px;
+            width: 50px; height: 50px;
+            background: var(--dark); color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
             font-size: 24px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
             z-index: 900;
         }
-
-        /* Modal 彈窗 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
-            overflow-y: auto;
-        }
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            width: 85%;
-            max-width: 500px;
-            border-radius: 12px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .checkbox-item {
-            background: #f0f0f0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-item input {
-            margin-right: 5px;
-        }
-        .btn-submit {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn-cancel {
-            background-color: #999;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
 
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('itinerary')">
-            <span class="nav-icon">📅</span>行程
+    <div class="date-scroller" id="date-scroller">
         </div>
-        <div class="nav-item" onclick="switchTab('accounting')">
-            <span class="nav-icon">💰</span>記帳
-        </div>
-        <div class="nav-item" onclick="switchTab('settings')">
-            <span class="nav-icon">⚙️</span>設定
-        </div>
-    </div>
 
-    <div id="tab-itinerary" class="container active">
-        <h1>🇹🇭 曼谷行程表</h1>
+    <div id="page-itinerary" class="container active">
         <div id="itinerary-list">
             </div>
         <div class="fab" onclick="openItineraryModal()">+</div>
     </div>
 
-    <div id="tab-accounting" class="container">
-        <h1>💸 旅費記帳</h1>
+    <div id="page-tools" class="container">
+        <div class="info-section">
+            <div class="info-header">✈️ 航班資訊</div>
+            <div class="info-row">
+                <span class="info-label">去程 (12/23)</span>
+                <span class="info-value">FD235 <br>KHH 18:00 - DMK 21:30</span>
+            </div>
+            </div>
+
+        <div class="info-section">
+            <div class="info-header">🏨 住宿資訊</div>
+            <div class="info-row">
+                <span class="info-label">12/23 - 12/25 (唐人街)</span>
+                <span class="info-value">
+                    <a href="https://maps.google.com/?q=B2+China+Town+Yaowarat+Premier+Hotel" target="_blank">B2 唐人街耀華力</a>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">12/25 - 12/27 (通羅)</span>
+                <span class="info-value">
+                    <a href="https://maps.google.com/?q=Jasmine+59+Hotel" target="_blank">Jasmine 59 Hotel</a>
+                </span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-header">🆘 緊急聯絡</div>
+            <div class="info-row">
+                <span class="info-label">觀光警察</span>
+                <span class="info-value">1155</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">急救中心</span>
+                <span class="info-value">1669</span>
+            </div>
+        </div>
+
+        <div class="info-header" style="margin-top:20px;">💰 旅費記帳</div>
+        <div class="balance-card">
+            <div style="font-size: 0.9em; opacity: 0.8;">目前總開銷 (TWD)</div>
+            <div style="font-size: 2.5em; font-weight: bold;" id="total-expense">0</div>
+        </div>
         
-        <div class="card balance-card">
-            <div>目前總花費 (台幣)</div>
-            <div class="total-amount" id="total-twd">NT$ 0</div>
-            <div style="font-size:0.8em; opacity:0.8;">含所有分帳金額</div>
+        <div style="margin-bottom:15px; display:flex; gap:10px;">
+             <button class="btn-full btn-primary" onclick="openExpenseModal()" style="margin:0;">記一筆</button>
+             <button class="btn-full btn-cancel" onclick="openMemberModal()" style="margin:0;">設定成員</button>
         </div>
 
         <div id="expense-list">
             </div>
-        <div class="fab" onclick="openExpenseModal()">+</div>
     </div>
 
-    <div id="tab-settings" class="container">
-        <h1>⚙️ 設定 & 帳本</h1>
-        
-        <div class="card">
-            <h3>👥 旅伴名單 (分帳用)</h3>
-            <div id="members-list">
-                </div>
-            <div style="margin-top:10px; display:flex; gap:5px;">
-                <input type="text" id="new-member-name" class="form-control" placeholder="輸入名字">
-                <button onclick="addMember()" style="background:var(--secondary); color:white; border:none; padding:0 15px; border-radius:6px;">新增</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>🗑️ 資料管理</h3>
-            <p style="color:red; font-size:0.9em;">警告：重置將刪除所有資料</p>
-            <button onclick="resetAllData()" style="background:#ff4757; color:white; border:none; padding:10px; width:100%; border-radius:6px;">重置所有資料</button>
-        </div>
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchPage('itinerary', this)">
+            <span class="nav-icon">📅</span>
+            <span>行程</span>
+        </button>
+        <button class="nav-btn" onclick="switchPage('tools', this)">
+            <span class="nav-icon">🧳</span>
+            <span>資訊 & 記帳</span>
+        </button>
     </div>
 
-    <div id="itinerary-modal" class="modal">
+    <div id="modal-itinerary" class="modal">
         <div class="modal-content">
-            <h2 id="itinerary-modal-title">新增行程</h2>
-            <div class="form-group">
-                <label>時間</label>
-                <input type="time" id="trip-time" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>標題</label>
-                <input type="text" id="trip-title" class="form-control" placeholder="例：大皇宮">
-            </div>
-            <div class="form-group">
-                <label>類型</label>
-                <select id="trip-type" class="form-control">
-                    <option value="attraction">景點 🎡</option>
-                    <option value="food">美食 🍜</option>
-                    <option value="transport">交通 🚕</option>
-                    <option value="shopping">購物 🛍️</option>
-                    <option value="hotel">住宿 🏨</option>
+            <h3>編輯行程</h3>
+            <input type="hidden" id="edit-id">
+            <input type="date" id="input-date" class="form-control" value="2024-12-23">
+            <input type="time" id="input-time" class="form-control">
+            <select id="input-type" class="form-control">
+                <option value="attraction">🎡 景點</option>
+                <option value="food">🍜 餐廳/美食</option>
+                <option value="transport">🚕 交通/移動</option>
+                <option value="hotel">🏨 飯店</option>
+                <option value="flight">✈️ 航班</option>
+            </select>
+            <input type="text" id="input-title" class="form-control" placeholder="標題">
+            <input type="text" id="input-location" class="form-control" placeholder="地點 (用於導航)">
+            <textarea id="input-desc" class="form-control" rows="3" placeholder="備註/攻略/連結"></textarea>
+            <button class="btn-full btn-primary" onclick="saveItinerary()">儲存</button>
+            <button class="btn-full btn-cancel" onclick="closeModal('modal-itinerary')">取消</button>
+            <button class="btn-full" style="background:#ff7675; color:white;" onclick="deleteItinerary()">刪除</button>
+        </div>
+    </div>
+
+    <div id="modal-expense" class="modal">
+        <div class="modal-content">
+            <h3>記一筆</h3>
+            <input type="text" id="exp-title" class="form-control" placeholder="項目 (例: 晚餐)">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="exp-amount" class="form-control" placeholder="金額">
+                <select id="exp-currency" class="form-control" style="width:100px;" onchange="updateRate()">
+                    <option value="THB">THB</option>
+                    <option value="TWD">TWD</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>相關連結 (Google Map/食記)</label>
-                <input type="url" id="trip-link" class="form-control" placeholder="https://...">
-            </div>
-            <div class="form-group">
-                <label>備註</label>
-                <textarea id="trip-note" class="form-control" rows="3" placeholder="注意事項、預約號碼..."></textarea>
-            </div>
-            <button class="btn-submit" onclick="saveItinerary()">儲存</button>
-            <button class="btn-cancel" onclick="closeModal('itinerary-modal')">取消</button>
-        </div>
-    </div>
-
-    <div id="expense-modal" class="modal">
-        <div class="modal-content">
-            <h2>📝 記一筆</h2>
+            <input type="number" id="exp-rate" class="form-control" placeholder="匯率 (1外幣=?台幣)" value="0.95">
             
-            <div class="form-group">
-                <label>項目名稱</label>
-                <input type="text" id="exp-item" class="form-control" placeholder="例：午餐、Grab">
-            </div>
+            <label style="font-size:0.9em; font-weight:bold; display:block; margin-top:10px;">誰先付錢？</label>
+            <select id="exp-payer" class="form-control"></select>
 
-            <div class="form-group row">
-                <div style="flex:1">
-                    <label>金額</label>
-                    <input type="number" id="exp-amount" class="form-control" placeholder="0">
-                </div>
-                <div style="flex:1">
-                    <label>幣別</label>
-                    <select id="exp-currency" class="form-control" onchange="updateRatePlaceholder()">
-                        <option value="THB">泰銖 (THB)</option>
-                        <option value="TWD">台幣 (TWD)</option>
-                    </select>
-                </div>
-            </div>
+            <label style="font-size:0.9em; font-weight:bold; display:block; margin-top:10px;">分攤者</label>
+            <div id="exp-splitters" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;"></div>
 
-            <div class="form-group">
-                <label>當下匯率 (1 外幣 = ? 台幣)</label>
-                <input type="number" id="exp-rate" class="form-control" step="0.01" value="0.95">
-                <small style="color:#888;">若選台幣，匯率請設為 1</small>
-            </div>
-
-            <div class="form-group">
-                <label>分類</label>
-                <select id="exp-category" class="form-control">
-                    <option value="food">🍜 美食</option>
-                    <option value="transport">🚕 交通</option>
-                    <option value="shopping">🛍️ 購物</option>
-                    <option value="ticket">🎟️ 門票/玩樂</option>
-                    <option value="hotel">🏨 住宿</option>
-                    <option value="other">📝 其他</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>誰先付錢？</label>
-                <select id="exp-payer" class="form-control">
-                    </select>
-            </div>
-
-            <div class="form-group">
-                <label>誰要分攤？</label>
-                <div style="margin-bottom:5px;">
-                    <input type="checkbox" id="split-all" onchange="toggleAllSplitters(this)" checked>
-                    <label for="split-all" style="display:inline;">全選</label>
-                </div>
-                <div id="exp-splitters" class="checkbox-group">
-                    </div>
-            </div>
-
-            <button class="btn-submit" onclick="saveExpense()">記帳</button>
-            <button class="btn-cancel" onclick="closeModal('expense-modal')">取消</button>
+            <button class="btn-full btn-primary" onclick="saveExpense()">儲存</button>
+            <button class="btn-full btn-cancel" onclick="closeModal('modal-expense')">取消</button>
         </div>
     </div>
 
     <script>
-        // --- 資料初始化 ---
-        // 預設行程 (如果 LocalStorage 是空的，就用這個)
-        const defaultItinerary = [
-            { id: 1, time: "10:00", title: "大皇宮 & 玉佛寺", type: "attraction", link: "https://goo.gl/maps/xyz", note: "穿著需有袖有褲", date: "Day 1" },
-            { id: 2, time: "12:30", title: "米其林午餐", type: "food", link: "", note: "已訂位", date: "Day 1" },
-            { id: 3, time: "15:00", title: "鄭王廟", type: "attraction", link: "", note: "搭船過去", date: "Day 1" }
+        // --- 1. 資料初始化 ---
+        // 預設行程資料 (依照您的要求 Hardcode)
+        const defaultData = [
+            // Day 1: 12/23
+            {
+                id: 1, date: "2024-12-23", time: "18:00", type: "flight",
+                title: "高雄飛曼谷 (FD235)", location: "Don Mueang International Airport",
+                desc: "✈️ 高雄 18:00 - 廊曼 21:30\n抵達後直接包車去飯店"
+            },
+            {
+                id: 2, date: "2024-12-23", time: "22:30", type: "transport",
+                title: "機場包車至飯店", location: "B2 China Town Yaowarat Premier Hotel",
+                desc: "預計沒塞車半小時到。\n入住: B2 唐人街耀華力尊尚飯店"
+            },
+            {
+                id: 3, date: "2024-12-23", time: "23:00", type: "food",
+                title: "唐人街吃宵夜", location: "Yaowarat Road",
+                desc: "必吃攻略：粿汁、海鮮大排檔。\n參考: 艾瑞絲的吃貨日常懶人包"
+            },
+            // Day 2: 12/24
+            {
+                id: 4, date: "2024-12-24", time: "10:00", type: "attraction",
+                title: "石龍軍路文青散策", location: "Charoen Krung Road",
+                desc: "文青版介紹、街頭藝術、老建築巡禮"
+            },
+            {
+                id: 5, date: "2024-12-24", time: "13:00", type: "attraction",
+                title: "臥佛寺", location: "Wat Pho",
+                desc: "曼谷最古老寺廟，記得不能穿太露"
+            },
+            {
+                id: 6, date: "2024-12-24", time: "15:00", type: "attraction",
+                title: "鄭王廟 (黎明寺)", location: "Wat Arun",
+                desc: "搭船過去，網美拍照聖地"
+            },
+            {
+                id: 7, date: "2024-12-24", time: "17:00", type: "food",
+                title: "王朗市場", location: "Wang Lang Market",
+                desc: "在地小吃集散地"
+            },
+            {
+                id: 8, date: "2024-12-24", time: "19:00", type: "food",
+                title: "River City 郵輪晚餐", location: "River City Bangkok",
+                desc: "享受昭披耶河夜景"
+            },
+            // Day 3: 12/25
+            {
+                id: 9, date: "2024-12-25", time: "09:00", type: "food",
+                title: "早餐：益生甫記 或 安樂園", location: "On Lok Yun",
+                desc: "唐人街附近老牌早餐，推薦咖椰吐司"
+            },
+            {
+                id: 10, date: "2024-12-25", time: "11:00", type: "attraction",
+                title: "嵩越路 Song Wat", location: "Song Wat Road",
+                desc: "近期很紅的文創老街"
+            },
+            {
+                id: 11, date: "2024-12-25", time: "14:00", type: "attraction",
+                title: "石龍軍路 (上半路) & 32Bar", location: "32 Bar Bangkok",
+                desc: "下午茶或小酌"
+            },
+            {
+                id: 12, date: "2024-12-25", time: "16:00", type: "attraction",
+                title: "唐人街逛逛", location: "Yaowarat Road",
+                desc: "感受白天與夜晚不同的氛圍"
+            },
+            {
+                id: 13, date: "2024-12-25", time: "19:00", type: "attraction",
+                title: "考山路 / 百貨公司", location: "Khaosan Road",
+                desc: "Option: Iconsiam, Central World, Dusit Central Park"
+            },
+             // Day 4: 12/26
+            {
+                id: 14, date: "2024-12-26", time: "08:00", type: "transport",
+                title: "包車一日遊", location: "B2 China Town Yaowarat Premier Hotel",
+                desc: "飯店大廳集合出發"
+            },
+            {
+                id: 15, date: "2024-12-26", time: "10:00", type: "attraction",
+                title: "美功鐵道市場", location: "Maeklong Railway Market",
+                desc: "看火車經過市集的奇景"
+            },
+            {
+                id: 16, date: "2024-12-26", time: "12:00", type: "attraction",
+                title: "丹嫩莎朵水上市場", location: "Damnoen Saduak Floating Market",
+                desc: "體驗手搖船"
+            },
+            {
+                id: 17, date: "2024-12-26", time: "14:00", type: "attraction",
+                title: "樹中廟", location: "Wat Bang Kung",
+                desc: "被菩提樹包圍的寺廟"
+            },
+            {
+                id: 18, date: "2024-12-26", time: "16:00", type: "transport",
+                title: "回程曼谷", location: "Jasmine 59 Hotel",
+                desc: "回飯店休息或去按摩/百貨公司"
+            }
         ];
 
-        // 應用程式狀態
-        let itineraryData = JSON.parse(localStorage.getItem('bkk_itinerary')) || defaultItinerary;
-        let expenseData = JSON.parse(localStorage.getItem('bkk_expenses')) || [];
-        let members = JSON.parse(localStorage.getItem('bkk_members')) || ['我', '旅伴A'];
+        // 狀態管理
+        let trips = JSON.parse(localStorage.getItem('bkk_trips_v2')) || defaultData;
+        let expenses = JSON.parse(localStorage.getItem('bkk_expenses_v2')) || [];
+        let members = JSON.parse(localStorage.getItem('bkk_members_v2')) || ['我', '旅伴A'];
         
-        let currentEditId = null; // 用來判斷是新增還是編輯
+        let currentDate = "2024-12-23";
+        let currentEditId = null;
 
-        // --- 頁面載入 ---
-        window.onload = function() {
+        // --- 2. 核心功能函式 ---
+
+        function init() {
+            renderDateScroller();
             renderItinerary();
-            renderExpenses();
-            renderMembers();
-            updateTotal();
-        };
-
-        // --- 頁面切換 ---
-        function switchTab(tabName) {
-            // 隱藏所有內容
-            document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
-            // 顯示選中內容
-            document.getElementById('tab-' + tabName).classList.add('active');
-            
-            // 更新導航列樣式
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const index = ['itinerary', 'accounting', 'settings'].indexOf(tabName);
-            document.querySelectorAll('.nav-item')[index].classList.add('active');
+            renderExpenseList();
+            renderMemberOptions();
         }
 
-        // --- 模態窗操作 ---
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+        // 渲染日期選單
+        function renderDateScroller() {
+            const dates = ["2024-12-23", "2024-12-24", "2024-12-25", "2024-12-26", "2024-12-27", "2024-12-28"];
+            const scroller = document.getElementById('date-scroller');
+            scroller.innerHTML = dates.map(date => {
+                const day = new Date(date).getDay();
+                const weekDays = ["日","一","二","三","四","五","六"];
+                return `<div class="date-chip ${date === currentDate ? 'active' : ''}" 
+                        onclick="setDate('${date}')">
+                        ${date.slice(5)} (${weekDays[day]})
+                        </div>`;
+            }).join('');
         }
 
-        // --- 行程功能 ---
+        function setDate(date) {
+            currentDate = date;
+            renderDateScroller();
+            renderItinerary();
+        }
+
+        // 渲染行程卡片 (AI Highlights 邏輯在此)
         function renderItinerary() {
             const list = document.getElementById('itinerary-list');
-            list.innerHTML = '';
+            const dayTrips = trips.filter(t => t.date === currentDate).sort((a,b) => a.time.localeCompare(b.time));
             
-            // 簡單排序：按時間
-            itineraryData.sort((a, b) => a.time.localeCompare(b.time));
-
-            itineraryData.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `
-                    <div class="trip-header">
-                        <span class="trip-time">${item.time}</span>
-                        <span style="font-size:0.8em; background:#eee; padding:2px 6px; border-radius:4px;">${getTypeEmoji(item.type)}</span>
-                    </div>
-                    <div class="trip-title">${item.title}</div>
-                    <div class="trip-links">
-                        ${item.link ? `<a href="${item.link}" target="_blank">🔗 查看地圖/資訊</a>` : ''}
-                    </div>
-                    ${item.note ? `<div class="trip-note">💡 ${item.note}</div>` : ''}
-                    <div class="action-btns">
-                        <button class="btn-icon" onclick="editItinerary(${index})">✏️</button>
-                        <button class="btn-icon" onclick="deleteItinerary(${index})" style="color:red;">🗑️</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-            // 儲存到 LocalStorage
-            localStorage.setItem('bkk_itinerary', JSON.stringify(itineraryData));
-        }
-
-        function getTypeEmoji(type) {
-            const map = {
-                'attraction': '🎡', 'food': '🍜', 'transport': '🚕', 
-                'shopping': '🛍️', 'hotel': '🏨'
-            };
-            return map[type] || '📍';
-        }
-
-        function openItineraryModal(index = null) {
-            const modal = document.getElementById('itinerary-modal');
-            const title = document.getElementById('itinerary-modal-title');
-            
-            if (index !== null) {
-                // 編輯模式
-                currentEditId = index;
-                title.innerText = "編輯行程";
-                const item = itineraryData[index];
-                document.getElementById('trip-time').value = item.time;
-                document.getElementById('trip-title').value = item.title;
-                document.getElementById('trip-type').value = item.type;
-                document.getElementById('trip-link').value = item.link || '';
-                document.getElementById('trip-note').value = item.note || '';
-            } else {
-                // 新增模式
-                currentEditId = null;
-                title.innerText = "新增行程";
-                document.getElementById('trip-time').value = '';
-                document.getElementById('trip-title').value = '';
-                document.getElementById('trip-type').value = 'attraction';
-                document.getElementById('trip-link').value = '';
-                document.getElementById('trip-note').value = '';
+            if(dayTrips.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:40px; color:#999;">本日尚無行程<br>點擊右下角 + 新增</div>`;
+                return;
             }
-            modal.style.display = 'block';
+
+            list.innerHTML = dayTrips.map(item => {
+                // 自動生成導航連結
+                const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location || item.title)}`;
+                
+                // AI 模擬分析文字 (Highlighter)
+                let processedDesc = item.desc;
+                const keywords = ["必吃", "FD235", "B2 唐人街", "Jasmine 59", "預約", "攻略"];
+                keywords.forEach(key => {
+                    processedDesc = processedDesc.replace(new RegExp(key, 'g'), `<span class="highlight-tag">${key}</span>`);
+                });
+                // 代號 Highlighting
+                processedDesc = processedDesc.replace(/([A-Z0-9]{4,})/g, `<span class="highlight-code">$1</span>`);
+
+                return `
+                <div class="card type-${item.type}" onclick="editItem(${item.id})">
+                    <div class="card-header">
+                        <span class="time-badge">${item.time}</span>
+                        <div class="weather-badge" onclick="event.stopPropagation(); window.open('https://weather.com/zh-TW/weather/today/l/THXX0002:1:TH', '_blank')">
+                            ☀️ 30°C
+                        </div>
+                    </div>
+                    <div class="card-title">${item.title}</div>
+                    <div class="card-desc">${processedDesc}</div>
+                    
+                    <div class="card-actions">
+                        <a href="${mapLink}" target="_blank" class="btn-action btn-nav" onclick="event.stopPropagation()">
+                            🚗 導航
+                        </a>
+                        ${item.location ? `
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(item.title + ' 攻略')}" target="_blank" class="btn-action btn-link" onclick="event.stopPropagation()">
+                            🔍 搜攻略
+                        </a>` : ''}
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            localStorage.setItem('bkk_trips_v2', JSON.stringify(trips));
+        }
+
+        // --- 3. 編輯/新增行程 ---
+        function openItineraryModal() {
+            currentEditId = null;
+            document.getElementById('input-date').value = currentDate;
+            document.getElementById('input-time').value = "10:00";
+            document.getElementById('input-title').value = "";
+            document.getElementById('input-location').value = "";
+            document.getElementById('input-desc').value = "";
+            document.getElementById('modal-itinerary').style.display = 'flex';
+        }
+
+        function editItem(id) {
+            const item = trips.find(t => t.id === id);
+            if(!item) return;
+            currentEditId = id;
+            document.getElementById('input-date').value = item.date;
+            document.getElementById('input-time').value = item.time;
+            document.getElementById('input-type').value = item.type;
+            document.getElementById('input-title').value = item.title;
+            document.getElementById('input-location').value = item.location;
+            document.getElementById('input-desc').value = item.desc;
+            document.getElementById('modal-itinerary').style.display = 'flex';
         }
 
         function saveItinerary() {
             const newItem = {
-                id: Date.now(),
-                time: document.getElementById('trip-time').value,
-                title: document.getElementById('trip-title').value,
-                type: document.getElementById('trip-type').value,
-                link: document.getElementById('trip-link').value,
-                note: document.getElementById('trip-note').value
+                id: currentEditId || Date.now(),
+                date: document.getElementById('input-date').value,
+                time: document.getElementById('input-time').value,
+                type: document.getElementById('input-type').value,
+                title: document.getElementById('input-title').value,
+                location: document.getElementById('input-location').value,
+                desc: document.getElementById('input-desc').value
             };
 
-            if (!newItem.time || !newItem.title) {
-                alert("時間和標題必填喔！");
-                return;
-            }
-
-            if (currentEditId !== null) {
-                // 更新
-                itineraryData[currentEditId] = newItem;
+            if(currentEditId) {
+                const idx = trips.findIndex(t => t.id === currentEditId);
+                trips[idx] = newItem;
             } else {
-                // 新增
-                itineraryData.push(newItem);
+                trips.push(newItem);
             }
-
-            renderItinerary();
-            closeModal('itinerary-modal');
+            closeModal('modal-itinerary');
+            setDate(newItem.date); // 跳轉到該日期
         }
 
-        function editItinerary(index) {
-            openItineraryModal(index);
-        }
-
-        function deleteItinerary(index) {
-            if(confirm("確定要刪除這個行程嗎？")) {
-                itineraryData.splice(index, 1);
+        function deleteItinerary() {
+            if(currentEditId && confirm("確定刪除此行程？")) {
+                trips = trips.filter(t => t.id !== currentEditId);
+                closeModal('modal-itinerary');
                 renderItinerary();
             }
         }
 
-        // --- 記帳功能 ---
-        function renderExpenses() {
-            const list = document.getElementById('expense-list');
-            list.innerHTML = '';
-
-            // 新的在上面
-            const sorted = [...expenseData].reverse();
-
-            sorted.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'expense-item';
-                div.innerHTML = `
-                    <div class="expense-info">
-                        <h4>${getCatEmoji(item.category)} ${item.item}</h4>
-                        <div class="expense-meta">
-                            ${item.payer} 付款 (${item.splitters.length}人分)
-                        </div>
-                    </div>
-                    <div class="expense-cost">
-                        <span class="twd">NT$ ${Math.round(item.amountTWD)}</span>
-                        <span class="original">${item.currency} ${item.amount}</span>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-            localStorage.setItem('bkk_expenses', JSON.stringify(expenseData));
-            updateTotal();
-        }
-
-        function getCatEmoji(cat) {
-            const map = {
-                'food': '🍜', 'transport': '🚕', 'shopping': '🛍️', 
-                'ticket': '🎟️', 'hotel': '🏨', 'other': '📝'
-            };
-            return map[cat] || '💸';
-        }
-
-        function updateTotal() {
-            let total = expenseData.reduce((sum, item) => sum + item.amountTWD, 0);
-            document.getElementById('total-twd').innerText = "NT$ " + Math.round(total).toLocaleString();
+        // --- 4. 記帳邏輯 ---
+        function renderMemberOptions() {
+            const payerSelect = document.getElementById('exp-payer');
+            const splitDiv = document.getElementById('exp-splitters');
+            payerSelect.innerHTML = members.map(m => `<option value="${m}">${m}</option>`).join('');
+            splitDiv.innerHTML = members.map(m => `
+                <label style="background:#eee; padding:5px 10px; border-radius:15px; display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" value="${m}" checked> ${m}
+                </label>
+            `).join('');
         }
 
         function openExpenseModal() {
-            // 重新載入成員選單
-            const payerSelect = document.getElementById('exp-payer');
-            const splitDiv = document.getElementById('exp-splitters');
-            
-            payerSelect.innerHTML = '';
-            splitDiv.innerHTML = '';
-
-            members.forEach(m => {
-                // 付款人選項
-                payerSelect.innerHTML += `<option value="${m}">${m}</option>`;
-                
-                // 分攤人 Checkbox
-                splitDiv.innerHTML += `
-                    <div class="checkbox-item">
-                        <input type="checkbox" class="splitter-cb" value="${m}" checked> ${m}
-                    </div>
-                `;
-            });
-
-            // 重置欄位
-            document.getElementById('exp-item').value = '';
+            renderMemberOptions();
+            document.getElementById('exp-title').value = '';
             document.getElementById('exp-amount').value = '';
-            document.getElementById('expense-modal').style.display = 'block';
-        }
-
-        function toggleAllSplitters(source) {
-            const cbs = document.querySelectorAll('.splitter-cb');
-            cbs.forEach(cb => cb.checked = source.checked);
-        }
-
-        function updateRatePlaceholder() {
-            const cur = document.getElementById('exp-currency').value;
-            const rateInput = document.getElementById('exp-rate');
-            if (cur === 'TWD') {
-                rateInput.value = 1;
-                rateInput.disabled = true;
-            } else {
-                rateInput.value = 0.95; // 預設泰銖匯率，可修改
-                rateInput.disabled = false;
-            }
+            document.getElementById('modal-expense').style.display = 'flex';
         }
 
         function saveExpense() {
-            const item = document.getElementById('exp-item').value;
             const amount = parseFloat(document.getElementById('exp-amount').value);
-            const currency = document.getElementById('exp-currency').value;
             const rate = parseFloat(document.getElementById('exp-rate').value);
-            const category = document.getElementById('exp-category').value;
-            const payer = document.getElementById('exp-payer').value;
+            const currency = document.getElementById('exp-currency').value;
             
-            // 收集分攤者
-            const splitters = [];
-            document.querySelectorAll('.splitter-cb:checked').forEach(cb => {
-                splitters.push(cb.value);
-            });
+            const splitters = Array.from(document.querySelectorAll('#exp-splitters input:checked')).map(cb => cb.value);
+            
+            if(!amount || splitters.length === 0) { alert("請輸入金額並至少選擇一人分攤"); return; }
 
-            if (!item || isNaN(amount) || splitters.length === 0) {
-                alert("資料不完整（金額、項目、至少一人分攤）");
-                return;
-            }
+            const twdAmount = Math.round(amount * (currency === 'THB' ? rate : 1));
 
-            const amountTWD = amount * rate;
-
-            const newExp = {
+            expenses.push({
                 id: Date.now(),
-                item, amount, currency, rate, category, payer, splitters, amountTWD
-            };
-
-            expenseData.push(newExp);
-            renderExpenses();
-            closeModal('expense-modal');
-        }
-
-        // --- 設定與成員功能 ---
-        function renderMembers() {
-            const list = document.getElementById('members-list');
-            list.innerHTML = '';
-            members.forEach((m, index) => {
-                const span = document.createElement('span');
-                span.className = 'member-tag';
-                span.innerHTML = `${m} <span style="cursor:pointer; margin-left:5px;" onclick="removeMember(${index})">x</span>`;
-                list.appendChild(span);
+                title: document.getElementById('exp-title').value,
+                amount: amount,
+                currency: currency,
+                twdAmount: twdAmount,
+                payer: document.getElementById('exp-payer').value,
+                splitters: splitters
             });
-            localStorage.setItem('bkk_members', JSON.stringify(members));
+
+            localStorage.setItem('bkk_expenses_v2', JSON.stringify(expenses));
+            renderExpenseList();
+            closeModal('modal-expense');
         }
 
-        function addMember() {
-            const name = document.getElementById('new-member-name').value;
-            if (name && !members.includes(name)) {
-                members.push(name);
-                document.getElementById('new-member-name').value = '';
-                renderMembers();
-            } else {
-                alert("名字為空或重複了");
-            }
+        function renderExpenseList() {
+            const list = document.getElementById('expense-list');
+            let total = 0;
+            list.innerHTML = expenses.slice().reverse().map(e => {
+                total += e.twdAmount;
+                return `
+                <div class="expense-item">
+                    <div>
+                        <div style="font-weight:bold;">${e.title}</div>
+                        <div style="font-size:0.8em; color:#888;">${e.payer} 付款 / ${e.splitters.length}人分</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="color:var(--primary); font-weight:bold;">NT$ ${e.twdAmount}</div>
+                        <div style="font-size:0.8em; color:#aaa;">${e.currency} ${e.amount}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            document.getElementById('total-expense').innerText = total.toLocaleString();
         }
 
-        function removeMember(index) {
-            if(confirm("確定移除這個旅伴嗎？")) {
-                members.splice(index, 1);
-                renderMembers();
-            }
+        function updateRate() {
+            const curr = document.getElementById('exp-currency').value;
+            document.getElementById('exp-rate').value = (curr === 'TWD') ? 1 : 0.95;
         }
 
-        function resetAllData() {
-            if (confirm("⚠️ 警告：這將會清空所有行程與記帳資料，無法復原！確定嗎？")) {
-                localStorage.removeItem('bkk_itinerary');
-                localStorage.removeItem('bkk_expenses');
-                localStorage.removeItem('bkk_members');
-                location.reload(); // 重新整理頁面
-            }
+        // --- 5. UI 工具 ---
+        function switchPage(pageId, btn) {
+            document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            if(btn) btn.classList.add('active');
         }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // 啟動
+        init();
+
     </script>
 </body>
 </html>
